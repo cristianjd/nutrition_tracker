@@ -1,4 +1,25 @@
 NutritionTracker2::Application.routes.draw do
+
+  root :to => "home#index"
+
+  match '/users/:user_id/api_tokens/new' => redirect('/auth/fatsecret?user_id=%{user_id}')
+  get '/auth/fatsecret/callback', :to => 'api_tokens#create'
+
+  resources :users, :except => [:index] do
+    resources :api_tokens
+  end
+
+  get "/users/:user_id/nutrition", :to => "users#nutrition", :as => 'user_nutrition'
+
+  resources :sessions, :only => [:new, :create, :destroy]
+
+  match '/login', :to => 'sessions#new'
+  match '/logout', :to => 'sessions#destroy', :via => :delete
+  match '/signup', :to => 'users#create'
+  match '/account', :to => 'users#show'
+  match '/edit_account', :to => 'users#edit'
+  match '/nutrition', :to => 'users#nutrition'
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

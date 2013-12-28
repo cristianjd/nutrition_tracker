@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  has_many :api_tokens, :dependent => :destroy
+
   attr_accessible :calories, :carbohydrate_ratio, :fat_ratio, :password, :password_confirmation, :protein_ratio, :username
   has_secure_password
 

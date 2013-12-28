@@ -11,12 +11,14 @@ class ApiTokensController < ApplicationController
     @new_api = @user.api_tokens.build(auth)
 
     if @new_api.save
+      flash[:success] = "Successfully linked account with FatSecret."
       redirect_to origin
     end
   end
 
   def destroy
     User.find(current_user).api_tokens.find(params[:id]).destroy
+    flash[:success] = "Successfully unlinked account from FatSecret."
     redirect_to account_path
   end
 

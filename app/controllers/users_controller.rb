@@ -11,7 +11,14 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(params[:user])
-    redirect_to account_path
+    if @user.save
+      sign_in(@user)
+      flash[:success] = "Account successfully created. Link with FatSecret to proceed."
+      redirect_to account_path
+    else
+      flash[:error] = @user.errors.full_messages.first if @user.errors.any?
+      redirect_to signup_path
+    end
   end
 
   def edit
@@ -20,13 +27,25 @@ class UsersController < ApplicationController
 
   def update
     @user = current_user
-    redirect_to account_path
+    unless @user.authenticate(params[:user][:current_password])
+      flash[:error] = "Current password is invalid."
+      redirect_to account_path
+    end
+    if @user.update_attributes(params[:user].except(:current_password))
+      flash[:success] = "Account successfully updated."
+      redirect_to account_path
+    else
+      flash[:error] = @user.errors.full_messages.first if @user.errors.any?
+      redirect_to edit_account_path
+    end
+
   end
 
   def destroy
     @user = current_user
     @user.destroy
-    redirect_to account_path
+    flash[:success] = "Account successfully deleted."
+    redirect_to root_path
   end
 
   def nutrition
@@ -55,10 +74,11 @@ class UsersController < ApplicationController
 
     def correct_user
       if signed_in?
-        if params[:id] != current_user.id
+        if params[:id] and (params[:id] != "#{current_user.id}")
           redirect_to :action => params[:action], :id => current_user.id
         end
       else
+        flash[:error] = "Must be signed in to proceed."
         redirect_to login_path
       end
     end

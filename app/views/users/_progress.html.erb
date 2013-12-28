@@ -1,0 +1,10 @@
+<table class="table table-hover" id="progress-table">
+  <% %w{calories protein carbohydrate fat}.each do |nutrient| %>
+  <% unit = nutrient == 'calories' ? 'Cal' : 'g' %>
+  <% tag = @data[:remaining_nutrients][nutrient] >= 0.0 ? 'remaining' : 'over' %>
+    <%= content_tag :tr, :class => tag do %>
+      <td> <b><%= "#{nutrient.titleize} #{('('+unit+')') unless nutrient == 'calories'}:" %></b><%=" #{@data[:current_nutrients][nutrient]} / #{@data[:goal_nutrients][nutrient]}" %> </td>
+      <td> <%= "#{@data[:remaining_nutrients][nutrient].abs} #{unit} #{tag}" %> </td>
+    <% end %>
+  <% end %>
+</table>

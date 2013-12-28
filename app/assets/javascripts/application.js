@@ -12,4 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require highcharts.js
+//= require twitter/bootstrap
+//= require bootstrap-datepicker.js
 //= require_tree .

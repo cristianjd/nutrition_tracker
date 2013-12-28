@@ -1,0 +1,26 @@
+<%= content_tag 'div', :id => 'charts', :class => 'container' do %>
+  <h3><%= link_to 'Totals', edit_account_path %></h3>
+  <%= content_tag 'div', :id => 'bar-chart-container', :class => 'row' do %>
+    <%= content_tag 'div', :id => 'progress', :class => 'col-md-5' do %>
+      <%= render 'progress' %>
+      <% end %>
+      <%= content_tag 'div', :id => 'bar-chart', :class => 'col-md-7' do %>
+      <% end %>
+    <% end %>
+  <%= content_tag 'div', :id => 'pie-chart-container', :class => 'row' do %>
+    <%= content_tag 'div', :id => 'goal-pie-chart-container', :class => 'col-md-5' do %>
+      <h3><%= link_to 'Goal Ratio', edit_account_path %></h3>
+      <%= content_tag 'div', :id => 'goal-pie-chart', :class => 'row' do %>
+      <% end %>
+    <% end %>
+    <%= content_tag 'div', :id => 'current-pie-chart-container', :class => 'col-md-7' do %>
+      <h3>Current Ratio</h3>
+      <% if @data[:current_nutrients]['calories'] == 0.0 %>
+        <h5>No Food Logged</h5>
+      <% else %>
+        <%= content_tag 'div', :id => 'current-pie-chart', :class => 'row' do %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

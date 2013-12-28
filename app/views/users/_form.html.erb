@@ -1,0 +1,79 @@
+<%= form_for @user do |f| %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited
+        this post from being saved:</h2>
+      <ul>
+        <% @user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+    <% end %>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :username, 'Username (6 - 20 characters)'%>
+      <%= f.text_field :username, :class => "form-control" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :calories, 'Calories per Day' %>
+      <%= f.text_field :calories, :class => "form-control" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :protein_ratio, 'Percentage of Calories from Protein' %>
+      <%= f.text_field :protein_ratio, :class => "form-control" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :carbohydrate_ratio, 'Percentage of Calories from Carbohydrate' %>
+      <%= f.text_field :carbohydrate_ratio, :class => "form-control" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :fat_ratio, 'Percentage of Calories from Fat' %>
+      <%= f.text_field :fat_ratio, :class => "form-control" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :password, 'Password (6 - 20 characters)' %>
+      <%= f.password_field :password, :class => "form-control" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-xs-5">
+      <%= f.label :password_confirmation, 'Password Confirmation' %>
+      <%= f.password_field :password_confirmation, :class => "form-control" %>
+    </div>
+  </div>
+
+  <% if params[:action] == 'edit' %>
+    <div class="row">
+      <div class="form-group col-xs-5">
+        <%= f.label :current_password, 'Current Password (Required to make changes)' %>
+        <%= f.password_field :current_password, :class => "form-control" %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="form-group col-xs-3">
+      <% submit_text = params[:action] == 'new' ? 'Sign Up' : 'Update' %>
+      <%= f.submit submit_text, :class => "btn btn-primary" %>
+    </div>
+  </div>
+
+<% end %>

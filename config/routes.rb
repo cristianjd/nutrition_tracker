@@ -9,13 +9,13 @@ NutritionTracker2::Application.routes.draw do
     resources :api_tokens
   end
 
-  get "/users/:user_id/nutrition", :to => "users#nutrition", :as => 'user_nutrition'
+  get "/users/:id/nutrition", :to => "users#nutrition", :as => 'user_nutrition'
 
   resources :sessions, :only => [:new, :create, :destroy]
 
   match '/login', :to => 'sessions#new'
   match '/logout', :to => 'sessions#destroy', :via => :delete
-  match '/signup', :to => 'users#create'
+  match '/signup', :to => 'users#new'
   match '/account', :to => 'users#show'
   match '/edit_account', :to => 'users#edit'
   match '/nutrition', :to => 'users#nutrition'

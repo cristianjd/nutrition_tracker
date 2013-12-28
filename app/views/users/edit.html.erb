@@ -1,2 +1,13 @@
-<h1>Users#edit</h1>
-<p>Find me in app/views/users/edit.html.erb</p>
+<h2>Edit Account Settings</h2>
+
+<%= render 'form' %>
+
+<% if @user.api_tokens.empty? %>
+  <p><b><%= link_to 'Link with FatSecret', new_user_api_token_path(@user) %></b></p>
+<% else %>
+  <p><%=link_to "Unlink with FatSecret", user_api_token_path(@user, @user.api_tokens.first), :method => :delete %></p>
+<% end %>
+
+<p><%= link_to "Cancel my Account", user_path(@user), :data => { :confirm => "Are you sure?" }, :method => :delete %>.</p>
+
+<%= link_to "Back", :back %>

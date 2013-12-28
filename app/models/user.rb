@@ -4,13 +4,14 @@ class User < ActiveRecord::Base
   attr_accessible :calories, :carbohydrate_ratio, :fat_ratio, :password, :password_confirmation, :protein_ratio, :username
   has_secure_password
 
-  validates :name, :presence => true, :length => { minimum: 6, maximum: 20 }, :uniqueness => true
+  validates :username, :presence => true, :length => { minimum: 6, maximum: 20 }, :uniqueness => true
   validates :password, :presence => true, :length => { minimum: 6 }
   validates :password_confirmation, :presence => true
   validates :calories, :protein_ratio, :carbohydrate_ratio, :fat_ratio, :presence => true, :numericality => true
   validates_with RatioValidator
 
   before_save :create_remember_token
+  after_validation { self.errors.messages.delete(:password_digest) }
 
   NUTRIENTS = %w{calories protein carbohydrate fat}
 

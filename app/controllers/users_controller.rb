@@ -13,10 +13,9 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     if @user.save
       sign_in(@user, false)
-      flash[:success] = "Account successfully created. Link with FatSecret to proceed."
-      redirect_to account_path
+      redirect_to account_path, :notice => "Account successfully created. Link with FatSecret to proceed."
     else
-      flash[:error] = @user.errors.full_messages.first if @user.errors.any?
+      flash[:alert] = @user.errors.full_messages.first if @user.errors.any?
       redirect_to signup_path
     end
   end
@@ -33,29 +32,26 @@ class UsersController < ApplicationController
         params[:user].delete(:password_confirmation)
       end
       if @user.update_attributes(params[:user])
-        flash[:success] = "Account successfully updated."
-        redirect_to account_path
+        redirect_to account_path, :notice => "Account successfully updated."
       else
-        flash[:error] = @user.errors.full_messages.first if @user.errors.any?
+        flash[:alert] = @user.errors.full_messages.first if @user.errors.any?
         redirect_to edit_account_path
       end
     else
-      flash[:error] = "Current password is invalid."
-      redirect_to edit_account_path
+      redirect_to edit_account_path, :alert => "Current password is invalid."
     end
   end
 
   def destroy
     @user = current_user
     @user.destroy
-    flash[:success] = "Account successfully deleted."
-    redirect_to root_path
+    redirect_to root_path, :notice => "Account successfully deleted."
   end
 
   def nutrition
     @user = current_user
     if current_user.api_tokens.empty?
-      redirect_to account_path and return
+      redirect_to(account_path, :alert => "Must link with FatSecret to proceed.") and return
     end
     if params[:date]
       date = Date.strptime(params[:date], '%m-%d-%Y')
@@ -82,8 +78,7 @@ class UsersController < ApplicationController
           redirect_to :action => params[:action], :id => current_user.id
         end
       else
-        flash[:error] = "Must be signed in to proceed."
-        redirect_to login_path
+        redirect_to login_path, :alert => "Must be signed in to proceed."
       end
     end
 

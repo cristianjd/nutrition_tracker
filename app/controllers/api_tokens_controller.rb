@@ -11,21 +11,19 @@ class ApiTokensController < ApplicationController
     @new_api = @user.api_tokens.build(auth)
 
     if @new_api.save
-      flash[:success] = "Successfully linked account with FatSecret."
-      redirect_to origin
+      redirect_to origin, :notice => "Successfully linked account with FatSecret."
     end
   end
 
   def destroy
     User.find(current_user).api_tokens.find(params[:id]).destroy
-    flash[:success] = "Successfully unlinked account from FatSecret."
-    redirect_to account_path
+    redirect_to account_path, :notice => "Successfully unlinked account from FatSecret."
   end
 
   private
 
     def signed_in_user
-      redirect_to login_path unless signed_in?
+      redirect_to(login_path, :alert => "You must sign in to proceed.") unless signed_in?
     end
 
     def omniauth auth

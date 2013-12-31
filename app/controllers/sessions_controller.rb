@@ -10,21 +10,18 @@ class SessionsController < ApplicationController
       else
         sign_in(user, false)
       end
-      flash[:success] = "Successfully signed in."
       if user.api_tokens.empty?
-        redirect_to account_path
+        redirect_to account_path, :notice => "Successfully logged in."
       else
-        redirect_to nutrition_path
+        redirect_to nutrition_path, :notice => "Successfully logged in."
       end
     else
-      flash[:error] = "Invalid username or password."
-      redirect_to login_path
+      redirect_to login_path, :alert => "Invalid username or password."
     end
   end
 
   def destroy
     sign_out
-    flash[:success] = "Successfully signed out."
-    redirect_to root_path
+    redirect_to root_path, :notice => "Successfully logged out."
   end
 end

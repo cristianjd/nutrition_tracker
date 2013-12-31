@@ -5,12 +5,11 @@ class User < ActiveRecord::Base
   has_secure_password
 
   validates :username, :presence => true, :length => { minimum: 6, maximum: 20 }, :uniqueness => true
-  validates :password, :presence => true, :length => { minimum: 6 }
-  validates :password_confirmation, :presence => true
+  validates :password, :presence => true, :confirmation => true, :length => { minimum: 6 }, :if => :password_changed?
   validates :calories, :protein_ratio, :carbohydrate_ratio, :fat_ratio, :presence => true, :numericality => true
   validates_with RatioValidator
 
-  before_save :create_remember_token
+  before_create :create_remember_token
   after_validation { self.errors.messages.delete(:password_digest) }
 
   NUTRIENTS = %w{calories protein carbohydrate fat}
@@ -26,6 +25,10 @@ class User < ActiveRecord::Base
 
     def create_remember_token
       self.remember_token = SecureRandom.urlsafe_base64
+    end
+
+    def password_changed?
+      password.present? or password_digest.blank?
     end
 
     def extract_total(response, nutrient)

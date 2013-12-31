@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :correct_user, :except => [:new, :create]
+  #before_filter :correct_user, :except => [:new, :create]
 
   def show
     @user = current_user

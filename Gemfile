@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.14'
 ruby '1.9.3'
 
+gem 'webrick', '1.3.1'
 gem 'fatsecret-omniauth'
 gem 'nokogiri'
 gem 'bootstrap-sass-rails'
@@ -10,6 +11,7 @@ gem 'figaro'
 
 group :development do
   gem 'better_errors'
+  gem 'quiet_assets'
 end
 
 group :development, :test do

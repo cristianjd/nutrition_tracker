@@ -5,7 +5,11 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by_username(params[:session][:username])
     if user && user.authenticate(params[:session][:password])
-      sign_in user
+      if params[:session][:remember_me] == "1"
+        sign_in(user, true)
+      else
+        sign_in(user, false)
+      end
       flash[:success] = "Successfully signed in."
       if user.api_tokens.empty?
         redirect_to account_path

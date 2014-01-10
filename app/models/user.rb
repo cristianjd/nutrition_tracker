@@ -21,6 +21,18 @@ class User < ActiveRecord::Base
     {:current_nutrients => current_nutrients, :goal_nutrients => goal_nutrients, :remaining_nutrients => remaining_nutrients}
   end
 
+  def test_request(params)
+    tokens = self.api_tokens.find_by_provider('fatsecret')
+    request = Fatsecret::Api.new({}).api_call(
+        ENV['FATSECRET_KEY'],
+        ENV['FATSECRET_SECRET'],
+        params,
+        tokens['auth_token'] ||= "",
+        tokens['auth_secret'] ||= ""
+    )
+    request.body
+  end
+
   private
 
     def create_remember_token

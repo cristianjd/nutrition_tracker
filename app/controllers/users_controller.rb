@@ -70,6 +70,13 @@ class UsersController < ApplicationController
     end
   end
 
+  def test
+    @user = current_user
+    date_int = (Date.today - Date.new(1970,1,1)).to_i - 1
+    @response = @user.test_request({:method => 'food_entries.get', :format => "json", :date => date_int})
+    @hash = JSON.parse(@response).to_hash
+  end
+
   private
 
     def correct_user

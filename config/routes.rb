@@ -19,6 +19,7 @@ NutritionTracker2::Application.routes.draw do
   match '/account', :to => 'users#show'
   match '/edit_account', :to => 'users#edit'
   match '/nutrition', :to => 'users#nutrition'
+  match '/test', :to => 'users#test'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

@@ -21,18 +21,6 @@ class User < ActiveRecord::Base
     {:current_nutrients => current_nutrients, :goal_nutrients => goal_nutrients, :remaining_nutrients => remaining_nutrients}
   end
 
-  def test_request(params)
-    tokens = self.api_tokens.find_by_provider('fatsecret')
-    request = Fatsecret::Api.new({}).api_call(
-        ENV['FATSECRET_KEY'],
-        ENV['FATSECRET_SECRET'],
-        params,
-        tokens['auth_token'] ||= "",
-        tokens['auth_secret'] ||= ""
-    )
-    request.body
-  end
-
   private
 
     def create_remember_token
@@ -43,22 +31,26 @@ class User < ActiveRecord::Base
       password.present? or password_digest.blank?
     end
 
+  def fatsecret_api_call(params)
+    token = self.api_tokens.find_by_provider('fatsecret')
+    request = Fatsecret::Api.new({}).api_call(
+        ENV['FATSECRET_KEY'],
+        ENV['FATSECRET_SECRET'],
+        params,
+        token['auth_token'] ||= "",
+        token['auth_secret'] ||= ""
+    )
+    request.body
+  end
+
     def extract_total(response, nutrient)
-      Nokogiri::XML(response).css(nutrient).children.inject(0.0) {|total, match| total + match.text.to_s.to_i}
+      JSON.parse(response).to_hash["food_entries"]["food_entry"].inject(0.0) {|total, match| total + match[nutrient].to_i}
     end
 
     def get_current_nutrients(date)
-      tokens = self.api_tokens.find_by_provider('fatsecret')
       date_int = (date - Date.new(1970,1,1)).to_i
-      request = Fatsecret::Api.new({}).api_call(
-          ENV['FATSECRET_KEY'],
-          ENV['FATSECRET_SECRET'],
-          {:date => date_int,
-           :method => 'food_entries.get'},
-          tokens['auth_token'] ||= "",
-          tokens['auth_secret'] ||= ""
-      )
-      Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| extract_total(request.body, nutrient).round(1)})]
+      call_data = fatsecret_api_call({:date => date_int, :method => 'food_entries.get', :format => "json"})
+      Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| extract_total(call_data, nutrient).round(1)})]
     end
 
     def get_goal_nutrients

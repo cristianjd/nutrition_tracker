@@ -24,7 +24,13 @@
     <% end %>
   <% end %>
   <h3>Entries</h3>
-  <%= content_tag 'div', :id => 'entries', :class => 'row' do %>
-    <%= render 'entries' %>
+  <%= content_tag 'div', :id => 'entries-container', :class => 'row' do %>
+    <%= content_tag 'div', :id => 'entries', :class => 'col-md-12' do %>
+      <% if @data[:current_nutrients]['calories'] == 0.0 %>
+        <h5>No Food Logged</h5>
+      <% else %>
+        <%= render 'entries' %>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>

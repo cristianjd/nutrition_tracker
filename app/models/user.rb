@@ -46,14 +46,22 @@ class User < ActiveRecord::Base
   end
 
   def sanitize_response(response)
-    entries = JSON.parse(response).to_hash["food_entries"]["food_entry"]
-    entries.each do |entry|
-      entry.select! {|key, value| ((NUTRIENTS + ["food_entry_description"]).include?(key))}
+    entries = JSON.parse(response).to_hash["food_entries"]
+    if entries
+      entries["food_entry"].each do |entry|
+        entry.select! {|key, value| ((NUTRIENTS + ["food_entry_description"]).include?(key))}
+      end
+    else
+      nil
     end
   end
 
      def get_current_nutrients(entries)
-      Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| entries.inject(0.0) {|total, match| total + match[nutrient].to_f}.round(1)})]
+       if entries
+        Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| entries.inject(0.0) {|total, match| total + match[nutrient].to_f}.round(1)})]
+       else
+        Hash[NUTRIENTS.zip([0.0,0.0,0.0,0.0])]
+       end
     end
 
     def get_goal_nutrients

@@ -60,6 +60,7 @@ class UsersController < ApplicationController
                 :current_nutrients => nutrient_data[:current_nutrients],
                 :goal_nutrients => nutrient_data[:goal_nutrients],
                 :remaining_nutrients => nutrient_data[:remaining_nutrients] }
+      @entries = nutrient_data[:entries]
     else
       today = Date.today.strftime('%m-%d-%Y')
       if params[:id]

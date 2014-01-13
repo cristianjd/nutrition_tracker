@@ -1,0 +1,17 @@
+<table class="table table-hover" id="progress-table">
+  <tr>
+    <th>Description</th>
+    <th>Protein (g)</th>
+    <th>Carbohydrate (g)</th>
+    <th>Fat (g)</th>
+    <th>Calories</th>
+  </tr>
+  <% @entries.each do |entry| %>
+  <tr>
+    <td><%= entry['food_entry_description'] %></td>
+    <% %w{protein carbohydrate fat calories}.each do |col| %>
+    <td><%= entry[col].to_f.round(1) %></td>
+    <% end %>
+  </tr>
+  <% end %>
+</table>

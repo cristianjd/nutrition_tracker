@@ -15,10 +15,12 @@ class User < ActiveRecord::Base
   NUTRIENTS = %w{calories protein carbohydrate fat}
 
   def get_nutrient_data(date)
-    current_nutrients = get_current_nutrients(date)
+    date_int = (date - Date.new(1970,1,1)).to_i
+    entries = sanitize_response(fatsecret_api_call({:date => date_int, :method => 'food_entries.get', :format => "json"}))
+    current_nutrients = get_current_nutrients(entries)
     goal_nutrients = get_goal_nutrients
     remaining_nutrients = get_remaining_nutrients(current_nutrients, goal_nutrients)
-    {:current_nutrients => current_nutrients, :goal_nutrients => goal_nutrients, :remaining_nutrients => remaining_nutrients}
+    {:current_nutrients => current_nutrients, :goal_nutrients => goal_nutrients, :remaining_nutrients => remaining_nutrients, :entries => entries}
   end
 
   private
@@ -33,24 +35,25 @@ class User < ActiveRecord::Base
 
   def fatsecret_api_call(params)
     token = self.api_tokens.find_by_provider('fatsecret')
-    request = Fatsecret::Api.new({}).api_call(
+    response = Fatsecret::Api.new({}).api_call(
         ENV['FATSECRET_KEY'],
         ENV['FATSECRET_SECRET'],
         params,
         token['auth_token'] ||= "",
         token['auth_secret'] ||= ""
     )
-    request.body
+    response.body
   end
 
-    def extract_total(response, nutrient)
-      JSON.parse(response).to_hash["food_entries"]["food_entry"].inject(0.0) {|total, match| total + match[nutrient].to_i}
+  def sanitize_response(response)
+    entries = JSON.parse(response).to_hash["food_entries"]["food_entry"]
+    entries.each do |entry|
+      entry.select! {|key, value| ((NUTRIENTS + ["food_entry_description"]).include?(key))}
     end
+  end
 
-    def get_current_nutrients(date)
-      date_int = (date - Date.new(1970,1,1)).to_i
-      call_data = fatsecret_api_call({:date => date_int, :method => 'food_entries.get', :format => "json"})
-      Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| extract_total(call_data, nutrient).round(1)})]
+     def get_current_nutrients(entries)
+      Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| entries.inject(0.0) {|total, match| total + match[nutrient].to_f}.round(1)})]
     end
 
     def get_goal_nutrients

@@ -33,35 +33,35 @@ class User < ActiveRecord::Base
       password.present? or password_digest.blank?
     end
 
-  def fatsecret_api_call(params)
-    token = self.api_tokens.find_by_provider('fatsecret')
-    response = Fatsecret::Api.new({}).api_call(
-        ENV['FATSECRET_KEY'],
-        ENV['FATSECRET_SECRET'],
-        params,
-        token['auth_token'] ||= "",
-        token['auth_secret'] ||= ""
-    )
-    response.body
-  end
-
-  def sanitize_response(response)
-    entries = JSON.parse(response).to_hash["food_entries"]
-    if entries
-      entries["food_entry"].each do |entry|
-        entry.select! {|key, value| ((NUTRIENTS + ["food_entry_description"]).include?(key))}
-      end
-    else
-      nil
+    def fatsecret_api_call(params)
+      token = self.api_tokens.find_by_provider('fatsecret')
+      response = Fatsecret::Api.new({}).api_call(
+          ENV['FATSECRET_KEY'],
+          ENV['FATSECRET_SECRET'],
+          params,
+          token['auth_token'] ||= "",
+          token['auth_secret'] ||= ""
+      )
+      response.body
     end
-  end
 
-     def get_current_nutrients(entries)
-       if entries
-        Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| entries.inject(0.0) {|total, match| total + match[nutrient].to_f}.round(1)})]
-       else
-        Hash[NUTRIENTS.zip([0.0,0.0,0.0,0.0])]
-       end
+    def sanitize_response(response)
+      entries = JSON.parse(response).to_hash["food_entries"]
+      if entries
+        entries["food_entry"].each do |entry|
+          entry.select! {|key, value| ((NUTRIENTS + ["food_entry_description"]).include?(key))}
+        end
+      else
+        nil
+      end
+    end
+
+    def get_current_nutrients(entries)
+      if entries
+       Hash[NUTRIENTS.zip(NUTRIENTS.collect {|nutrient| entries.inject(0.0) {|total, match| total + match[nutrient].to_f}.round(1)})]
+      else
+       Hash[NUTRIENTS.zip([0.0,0.0,0.0,0.0])]
+      end
     end
 
     def get_goal_nutrients

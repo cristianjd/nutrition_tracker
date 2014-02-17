@@ -23,6 +23,10 @@ class User < ActiveRecord::Base
     {:current_nutrients => current_nutrients, :goal_nutrients => goal_nutrients, :remaining_nutrients => remaining_nutrients, :entries => entries}
   end
 
+  def test_call(params)
+    fatsecret_api_call(params)
+  end
+
   private
 
     def create_remember_token

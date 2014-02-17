@@ -78,6 +78,13 @@ class UsersController < ApplicationController
     @hash = JSON.parse(@response).to_hash
   end
 
+  def search
+    @user = current_user
+    if params[:q]
+      @foods = @user.search_food(params[:q])
+    end
+  end
+
   private
 
     def correct_user

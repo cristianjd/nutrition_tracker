@@ -27,6 +27,10 @@ class User < ActiveRecord::Base
     fatsecret_api_call(params)
   end
 
+  def search_food(exp)
+    JSON.parse(fatsecret_api_call({:method => 'foods.search', :format => "json", :search_expression => exp})).to_hash
+  end
+
   private
 
     def create_remember_token
